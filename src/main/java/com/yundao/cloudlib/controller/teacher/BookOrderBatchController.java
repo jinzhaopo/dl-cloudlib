@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.mysql.jdbc.StringUtils;
 import com.yundao.cloudlib.I18nConstant;
 import com.yundao.cloudlib.bean.Teacher;
 import com.yundao.cloudlib.model.enumType.BookBatchType;
@@ -107,7 +108,7 @@ public class BookOrderBatchController extends BaseController {
 			model.addAttribute("bookBatch", bookBatch);
 			return "/teacher/orderBatch/editBatch";
 		}
-		addErrorMessage(I18nConstant.message_error, ra);
+		addErrorMessage(I18nConstant.error_edit_status, ra);
 		return redirect("/teacher/batch/list");
 	}
 
@@ -140,14 +141,21 @@ public class BookOrderBatchController extends BaseController {
 		BookBatch bookBatch = teacherOrderBatchService.get(ids);
 		// 查询是否已经存在当前批次
 		BookBatch bb = teacherOrderBatchService.getOrderBatch(getTeacher().getSchoolId(), IsWorkBatchType.yes);
-		if (bb != null) {
-			// 存在当前工作批次，需要修改为不是当前工作批次
-			bb.setIsWorkBatch(IsWorkBatchType.no);
-			teacherOrderBatchService.updateSelective(bb);	
-		} 
-		bookBatch.setIsWorkBatch(IsWorkBatchType.yes);
-		teacherOrderBatchService.update(bookBatch);
-		addSuccessMessage(I18nConstant.success_edit, ra);
+		 
+		//
+		if(bookBatch.getStatus().equals(BookBatchType.reserve)){
+			if (bb != null) {
+				// 存在当前工作批次，需要修改为不是当前工作批次
+				bb.setIsWorkBatch(IsWorkBatchType.no);
+				teacherOrderBatchService.updateSelective(bb);	
+			}
+			bookBatch.setIsWorkBatch(IsWorkBatchType.yes);
+			teacherOrderBatchService.update(bookBatch);
+			addSuccessMessage(I18nConstant.success_edit, ra);
+		}else{
+			addErrorMessage(I18nConstant.error_edit_status, ra);
+		}
+		
 		return redirect("/teacher/batch/list");
 	}
 	
@@ -161,13 +169,29 @@ public class BookOrderBatchController extends BaseController {
 	 */
 	@RequestMapping(value="/checkName",method=RequestMethod.POST)
 	@ResponseBody
-	public Message checkName(String name){
+	public Message checkName(Long ids,String name){
 		BookBatch bb=teacherOrderBatchService.getOrderBatchByName(getTeacher().getSchoolId(), name);
+		//如果通过批次名查不到记录，那就是正确的，可以修改的
 		if(bb==null){
 			return Message.success(I18nConstant.message_success);
 		}else{
-			return Message.error(I18nConstant.message_error);
+			
+			//如果通过批次名查的到记录，看下是否是修改页面传过来的ids是否为空，如果为空那就是添加页面的名字重复了
+			if(ids==null){
+				
+				return Message.error(I18nConstant.message_error);
+			}else if(teacherOrderBatchService.get(ids).getName().equals(name)){
+				
+				//如果ids不为空，查下批次Id为ids的记录的名字是否与输入的名字一样，如果一样也可以的
+				return Message.success(I18nConstant.message_success);
+			}else{//如果ids不为空，查出来的批次名与输入名不一致，而且批次名是可以在数据库里面查得到的，所以可以确定是名字重复了
+				
+				return Message.error(I18nConstant.message_error);
+			}
+			
 		}
+		
+		
 		
 	}
 

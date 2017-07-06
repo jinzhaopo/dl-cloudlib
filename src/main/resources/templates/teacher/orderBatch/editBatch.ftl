@@ -90,6 +90,7 @@
 				 	var judge = false;
 					var $obj = $(obj);
 					var name = $obj.val();
+					var ids=$("#id").val();
 					
 					if(name == '') {
 						$("#nameInfo").text("批次名称不能为空*");
@@ -98,7 +99,7 @@
 						$.ajax({
 							type: "post",
 							url:"${base}/teacher/batch/checkName",
-							data:{"name":name},
+							data:{"name":name,"ids":ids},
 							dataType:"json",
 							async:false,
 							success:function(data){
@@ -120,9 +121,10 @@
 	<body>
 
 		<form action="${base}/teacher/batch/editBatch" method="post" id="formId">
-			<input type="hidden" name="id" value="${bookBatch.id }"/>
+			<input type="hidden" name="id" id="id" value="${bookBatch.id }"/>
 			<input type="hidden" name="schoolId" value="${bookBatch.schoolId }"/>
 			<input type="hidden" name="status" value="${bookBatch.status }"/>
+			<input type="hidden" name="status" value="${bookBatch.isWorkBatch }"/>
 			<div class="main">
 				[#include "/teacher/include/path.ftl"]
 				<div class="main_content">

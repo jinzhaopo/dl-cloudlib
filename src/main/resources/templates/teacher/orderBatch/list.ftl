@@ -21,12 +21,20 @@
 			 function isWorkBatchDate(url){
 				 editDataByCheckId(url);
 			}
+			
+			   /*
+				* 修改为当前工作批次状态
+				*/
+				 function isWorkBatchDate(url){
+					 editDataByCheckId(url);
+				}
+			
 			 
 		</script>
 	</head>
 
 	<body>
-		<form action="${base}/teacher/batch/bookOrderBatch" method="post" id="formId">
+		<form action="${base}/teacher/batch/list" method="post" id="formId">
 			<div class="main">
 				[#include "/teacher/include/path.ftl"]
 				<div class="main_content">
@@ -46,6 +54,8 @@
 								<a href="javascript:editDate('${base}/teacher/batch/editBatch');">修改</a><span class="btn_right"></span></li>
 							<li><span class="btn_left"></span>
 								<a href="javascript:isWorkBatchDate('${base}/teacher/batch/isWorkBatch');">设为当前批次</a><span class="btn_right"></span></li>
+							<li><span class="btn_left"></span>
+								<a href="javascript:isWorkBatchDate('${base}/teacher/batch/isWorkBatch');">提交审核</a><span class="btn_right"></span></li>
 						</ul>
 					</div>
 					<div class="list" id="list1">
