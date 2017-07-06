@@ -1,8 +1,8 @@
 package com.yundao.cloudlib.controller.teacher;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.mysql.jdbc.StringUtils;
 import com.yundao.cloudlib.I18nConstant;
-import com.yundao.cloudlib.bean.Teacher;
+import com.yundao.cloudlib.model.enumType.BookApplyType;
 import com.yundao.cloudlib.model.enumType.BookBatchType;
 import com.yundao.cloudlib.model.enumType.IsWorkBatchType;
+import com.yundao.cloudlib.model.teacher.BookApply;
 import com.yundao.cloudlib.model.teacher.BookBatch;
 import com.yundao.cloudlib.service.TeacherOrderBatchService;
+import com.yundao.cloudlib.service.TeacherOrderBookService;
 
 import framework.mvc.Message;
 import framework.page.Page;
@@ -41,6 +42,9 @@ import framework.util.ServletUtil;
 public class BookOrderBatchController extends BaseController {
 	@Autowired
 	private TeacherOrderBatchService teacherOrderBatchService;
+	
+	@Autowired
+	private TeacherOrderBookService teacherOrderBookService;
 
 	/**
 	 * 
@@ -190,11 +194,44 @@ public class BookOrderBatchController extends BaseController {
 			}
 			
 		}
-		
-		
-		
 	}
-
+	
+	/**
+	 * 
+	 * @Title: reviewBatch
+	 * @Description: 提交审核批次
+	 * @param ids
+	 * @return
+	 * @return: String
+	 */
+	@RequestMapping("/reviewBatch")
+	public String reviewBatch(Long ids, RedirectAttributes ra){
+		//查询出这个学校这个批次的书的集合
+		List<BookApply> list=teacherOrderBookService.getListByBatchId(getTeacher().getSchoolId(), ids);
+		//如果有书就提交，没书不能提交
+		if(list!=null&&list.size()>0){
+			
+			BookBatch bookBatch=teacherOrderBatchService.get(ids);
+			//查看这个批次是否为当前批次，如果是的话需要取消当前批次
+			if(bookBatch.getIsWorkBatch().equals(IsWorkBatchType.yes)){
+				bookBatch.setIsWorkBatch(IsWorkBatchType.no);
+			}
+			//修改批次的状态为审核
+			bookBatch.setStatus(BookBatchType.review);
+			teacherOrderBatchService.updateSelective(bookBatch);
+			//更新集合中的书的状态为审核
+			for(BookApply bookApply:list){
+				bookApply.setApplyStatus(BookApplyType.DEALING);
+				teacherOrderBookService.updateSelective(bookApply);
+			}
+			addSuccessMessage(I18nConstant.success_edit, ra);
+			
+		}else{
+			addErrorMessage(I18nConstant.error_edit_status, ra);
+		}
+		return redirect("/teacher/batch/list");
+	}
+	
 	/**
 	 * 
 	 * @Title: orderBookList
@@ -202,9 +239,24 @@ public class BookOrderBatchController extends BaseController {
 	 * @return
 	 * @return: String
 	 */
-	@RequestMapping("/orderBookList")
-	public String orderBookList() {
-		return "/teacher/orderBatch/orderBookList";
+	@RequestMapping("/selectBatch")
+	public String selectBatch(Page page,Long ids,Model model) {
+		BookBatch bookBatch=teacherOrderBatchService.get(ids);
+		Map<String, Object> searchMap=new TreeMap<String, Object>();
+		searchMap.put("EQ_bookBatchId",Long.toString(ids));
+		List<SearchFilter> filters = ServletUtil.parse(searchMap);
+		
+		page.setSearchFilters(filters);
+		page = teacherOrderBookService.find(page);
+		model.addAttribute(PAGE, page);
+		
+		//如果是预定状态下的批次，是可以修改电子书的数量，如果不是，则不可以改只能看和导出
+		if(bookBatch.getStatus().equals(BookBatchType.reserve)){
+			return "/teacher/orderBatch/reserveBookList";
+		}else{
+			return "/teacher/orderBatch/orderBookList";
+		}
+		
 	}
 
 	/**

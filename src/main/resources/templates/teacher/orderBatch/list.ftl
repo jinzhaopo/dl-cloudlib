@@ -25,10 +25,17 @@
 			   /*
 				* 修改为当前工作批次状态
 				*/
-				 function isWorkBatchDate(url){
-					 editDataByCheckId(url);
-				}
-			
+			function reviewDate(url){
+				editDataByCheckId(url);
+			}
+			/*
+			 *查看批次
+			 */
+			 function selectDate(url){
+				$("#form_ids").attr("action", url);
+				$("#form_ids").attr("method", "GET");
+				$("#form_ids").submit();
+			}			
 			 
 		</script>
 	</head>
@@ -55,7 +62,7 @@
 							<li><span class="btn_left"></span>
 								<a href="javascript:isWorkBatchDate('${base}/teacher/batch/isWorkBatch');">设为当前批次</a><span class="btn_right"></span></li>
 							<li><span class="btn_left"></span>
-								<a href="javascript:isWorkBatchDate('${base}/teacher/batch/isWorkBatch');">提交审核</a><span class="btn_right"></span></li>
+								<a href="javascript:reviewDate('${base}/teacher/batch/reviewBatch');">提交审核</a><span class="btn_right"></span></li>
 						</ul>
 					</div>
 					<div class="list" id="list1">
@@ -69,6 +76,7 @@
 									<th width="10%">联系方式</th>
 									<th width="16%">创建日期</th>
 									<th width="8%">状态</th>
+									<th width="8%">查看</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -87,6 +95,7 @@
 									<td>${data.contactWay }</td>
 									<td>${(data.createDate)?string('yyyy-MM-dd') }</td>
 									<td>${data.status.getName() }</td>
+									<td><a href="javascript:selectDate('${base}/teacher/batch/selectBatch');">查看</a></td>
 								</tr>
 
 								[/#list][/#if]
