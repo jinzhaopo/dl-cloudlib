@@ -1,17 +1,26 @@
 package com.yundao.cloudlib.controller.teacher;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.yundao.cloudlib.I18nConstant;
 import com.yundao.cloudlib.model.Book;
+import com.yundao.cloudlib.model.enumType.BookApplyType;
+import com.yundao.cloudlib.model.enumType.IsWorkBatchType;
 import com.yundao.cloudlib.model.teacher.BookApply;
 import com.yundao.cloudlib.model.teacher.BookBatch;
+import com.yundao.cloudlib.service.BookApplyService;
 import com.yundao.cloudlib.service.BookService;
+import com.yundao.cloudlib.service.TeacherOrderBatchService;
+
+import framework.mvc.Message;
 
 /**
  * 
@@ -23,9 +32,15 @@ import com.yundao.cloudlib.service.BookService;
  */
 @Controller
 @RequestMapping("/teacher/order")
-public class BookOrderController {
+public class BookOrderController extends BaseController {
 	@Autowired
 	private BookService bookService;
+
+	@Autowired
+	private TeacherOrderBatchService teacherOrderBatchService;
+
+	@Autowired
+	private BookApplyService bookApplyService;
 
 	/**
 	 * 
@@ -39,12 +54,13 @@ public class BookOrderController {
 	 * @return: String
 	 */
 	@RequestMapping("/add")
-	public String add(Long[] ids, Long bookReplication, Long mon, RedirectAttributes ra) {
+	@ResponseBody
+	public Message add(Long[] ids, Integer bookReplication, Integer mon) {
 		List<Book> books = bookService.getListByIds(Arrays.asList(ids));
-		for (Book book : books) {
+		List<BookApply> bookApplyList = getBookApplyList(books, teacherOrderBatchService.getOrderBatch(getTeacher().getSchoolId(), IsWorkBatchType.yes), bookReplication, mon);
+		bookApplyService.save(bookApplyList);
+		return Message.success(I18nConstant.teacher_order_success);
 
-		}
-		return null;
 	}
 
 	/**
@@ -54,7 +70,29 @@ public class BookOrderController {
 	 * @return
 	 * @return: List<BookApply>
 	 */
-	private List<BookApply> getBookApplyList(List<Book> books, BookBatch bookBatch, Long bookReplication, Long mon) {
-		return null;
+	private List<BookApply> getBookApplyList(List<Book> books, BookBatch bookBatch, Integer bookReplication, Integer mon) {
+		List<BookApply> bas = new ArrayList<BookApply>();
+		for (Book book : books) {
+			BookApply ba = new BookApply();
+			ba.setSchoolId(getTeacher().getSchoolId());
+			ba.setBookBatchId(bookBatch.getId());
+			ba.setBookBatchName(bookBatch.getName());
+			ba.setBookId(book.getId());
+			ba.setIsbn(book.getIsbn());
+			ba.setTitle(book.getTitle());
+			ba.setPress(book.getPress());
+			ba.setAuthor(book.getAuthor());
+			ba.setPublicationDate(book.getPublicationDate());
+			ba.setClassification(book.getClassification());
+			ba.setPath(book.getPath());
+			ba.setPrice(book.getPrice());
+			ba.setBookReplication(bookReplication);
+			ba.setMon(mon);
+			ba.setApplyStatus(BookApplyType.NOTSUBMIT);
+
+			bas.add(ba);
+
+		}
+		return bas;
 	}
 }

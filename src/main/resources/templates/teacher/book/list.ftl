@@ -37,7 +37,6 @@
 					}
 
 				});
-				
 				if(!judge) {
 					showMessageWarn("请先选择批次!");
 					return;
@@ -59,8 +58,24 @@
 			 * 订购
 			 */
 			function submitIds() {
-				$("#form_ids").attr("action",base+"/teacher/order/add");
-				$("#form_ids").submit();
+				//验证
+				var bookReplication = $("#bookReplication").val();
+				var mon = $("#mon").val();
+				
+				var data = $("#form_ids").serializeArray();
+				$.ajax({
+					type: "post",
+					data:data,
+					url: base + '/teacher/order/add',
+					async: false,
+					success: function(data) {
+						alert(data);
+					},
+					error: function() {
+						showMessageWarn("系统错误!");
+					}
+
+				});
 			}
 		</script>
 	</head>
@@ -149,12 +164,12 @@
 		</form>
 	</body>
 	</div>
-	<div id="fullbg"></div>
+	<div id="fullbg" onclick="closeBg();"></div>
 	<div id="dialog">
 		<p id="" class="title">请填写数量和期限</p>
 		<div class="content">
-			<span>副本数:</span><input type="number" name="bookReplication" id="bookReplication" form="form_ids"  required="required"><br/>
-			<span>期限(月):</span><input type="number" name="mon" id="mon" form="form_ids" required="required">
+			<span>副本数:</span><input type="number" name="bookReplication" id="bookReplication" form="form_ids" min="1"  required="required"><br/>
+			<span>期限(月):</span><input type="number" name="mon" id="mon" form="form_ids" required="required" min="1">
 		</div>
 		<p class="close" style="margin-top: 50px;background-color: #F4AB4C;" onclick="submitIds();">确定</p>
 	</div>

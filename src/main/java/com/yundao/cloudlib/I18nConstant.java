@@ -46,4 +46,8 @@ public interface I18nConstant {
 	 * 图书预定批次已经存在
 	 */
 	String teacher_order_batch_exist = "teacher_order_batch_exist";
+	/**
+	 * 预定成功
+	 */
+	String teacher_order_success = "teacher_order_success";
 }

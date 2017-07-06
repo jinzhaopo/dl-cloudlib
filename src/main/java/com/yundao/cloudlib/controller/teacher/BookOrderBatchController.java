@@ -136,21 +136,21 @@ public class BookOrderBatchController extends BaseController {
 	 */
 	@RequestMapping("/isWorkBatch")
 	public String isWorkBatchBatch(Long ids, RedirectAttributes ra) {
-		//查询需要修改为当前工作批次
+		// 查询需要修改为当前工作批次
 		BookBatch bookBatch = teacherOrderBatchService.get(ids);
 		// 查询是否已经存在当前批次
 		BookBatch bb = teacherOrderBatchService.getOrderBatch(getTeacher().getSchoolId(), IsWorkBatchType.yes);
 		if (bb != null) {
 			// 存在当前工作批次，需要修改为不是当前工作批次
 			bb.setIsWorkBatch(IsWorkBatchType.no);
-			teacherOrderBatchService.updateSelective(bb);	
-		} 
+			teacherOrderBatchService.updateSelective(bb);
+		}
 		bookBatch.setIsWorkBatch(IsWorkBatchType.yes);
 		teacherOrderBatchService.update(bookBatch);
 		addSuccessMessage(I18nConstant.success_edit, ra);
 		return redirect("/teacher/batch/list");
 	}
-	
+
 	/**
 	 * 
 	 * @Title: checkName
@@ -159,16 +159,16 @@ public class BookOrderBatchController extends BaseController {
 	 * @return
 	 * @return: String
 	 */
-	@RequestMapping(value="/checkName",method=RequestMethod.POST)
+	@RequestMapping(value = "/checkName", method = RequestMethod.POST)
 	@ResponseBody
-	public Message checkName(String name){
-		BookBatch bb=teacherOrderBatchService.getOrderBatchByName(getTeacher().getSchoolId(), name);
-		if(bb==null){
+	public Message checkName(String name) {
+		BookBatch bb = teacherOrderBatchService.getOrderBatchByName(getTeacher().getSchoolId(), name);
+		if (bb == null) {
 			return Message.success(I18nConstant.message_success);
-		}else{
+		} else {
 			return Message.error(I18nConstant.message_error);
 		}
-		
+
 	}
 
 	/**
@@ -190,11 +190,9 @@ public class BookOrderBatchController extends BaseController {
 	 * @return
 	 * @return: BookBatch
 	 */
-	/*
 	@RequestMapping("/getOrderBookBatch")
 	@ResponseBody
 	public BookBatch getOrderBookBatch() {
-		return teacherOrderBatchService.getOrderBatch(getTeacher().getSchoolId(), BookBatchType.reserve);
+		return teacherOrderBatchService.getOrderBatch(getTeacher().getSchoolId(), IsWorkBatchType.yes);
 	}
-	 */
 }
