@@ -50,4 +50,8 @@ public interface I18nConstant {
 	 * 预定成功
 	 */
 	String teacher_order_success = "teacher_order_success";
+	/**
+	 * 修改状态错误
+	 */
+	String error_edit_status = "error_delete_status";
 }
