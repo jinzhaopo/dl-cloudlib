@@ -118,6 +118,7 @@ function deleteDataByCheckId(url) {
 		var length = ids.length;
 		if (length != 1) {
 			alert("请选择一条记录");
+			
 			return;
 		} else {
 			$("#form_ids").attr("action", url);

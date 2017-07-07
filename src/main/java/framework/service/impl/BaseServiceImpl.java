@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 
 import framework.mapper.MyMapper;
 import framework.model.BaseEntity;

@@ -25,10 +25,10 @@
 			   /*
 				* 修改为当前工作批次状态
 				*/
-				 function isWorkBatchDate(url){
-					 editDataByCheckId(url);
-				}
-			
+			function reviewDate(url){
+				editDataByCheckId(url);
+			}
+						
 			 
 		</script>
 	</head>
@@ -55,7 +55,7 @@
 							<li><span class="btn_left"></span>
 								<a href="javascript:isWorkBatchDate('${base}/teacher/batch/isWorkBatch');">设为当前批次</a><span class="btn_right"></span></li>
 							<li><span class="btn_left"></span>
-								<a href="javascript:isWorkBatchDate('${base}/teacher/batch/isWorkBatch');">提交审核</a><span class="btn_right"></span></li>
+								<a href="javascript:reviewDate('${base}/teacher/batch/reviewBatch');">提交审核</a><span class="btn_right"></span></li>
 						</ul>
 					</div>
 					<div class="list" id="list1">
@@ -69,13 +69,14 @@
 									<th width="10%">联系方式</th>
 									<th width="16%">创建日期</th>
 									<th width="8%">状态</th>
+									<th width="8%">查看</th>
 								</tr>
 							</thead>
 							<tbody>
 								[#if (page.list)??] [#list page.list as data]
 
 								<tr class="odd">
-									<td><input type="checkbox" name="ids" value="${data.id }"  class="input_none" form="form_ids"/></td>
+									<td><input type="checkbox" name="ids" value="${data.id }" id="ids" class="input_none" form="form_ids"/></td>
 									<td >[#if (data.isWorkBatch.getName()=="2")] 
 									          	<span style="color: red;">${data.name}</span> 
 									     [#else]
@@ -87,6 +88,7 @@
 									<td>${data.contactWay }</td>
 									<td>${(data.createDate)?string('yyyy-MM-dd') }</td>
 									<td>${data.status.getName() }</td>
+									<td><a href="${base }/teacher/batch/selectBatch?ids=${data.id }">查看</a></td>
 								</tr>
 
 								[/#list][/#if]

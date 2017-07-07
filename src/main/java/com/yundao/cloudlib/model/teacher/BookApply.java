@@ -115,36 +115,12 @@ public class BookApply extends BaseEntity {
 	@Column(name = "apply_status", nullable = false, unique = true)
 	private BookApplyType applyStatus;
 
-	public Integer getMon() {
-		return mon;
-	}
-
-	public void setMon(Integer mon) {
-		this.mon = mon;
-	}
-
 	public Long getSchoolId() {
 		return schoolId;
 	}
 
 	public void setSchoolId(Long schoolId) {
 		this.schoolId = schoolId;
-	}
-
-	public Long getBookId() {
-		return bookId;
-	}
-
-	public void setBookId(Long bookId) {
-		this.bookId = bookId;
-	}
-
-	public BookApplyType getApplyStatus() {
-		return applyStatus;
-	}
-
-	public void setApplyStatus(BookApplyType applyStatus) {
-		this.applyStatus = applyStatus;
 	}
 
 	public Long getBookBatchId() {
@@ -161,6 +137,14 @@ public class BookApply extends BaseEntity {
 
 	public void setBookBatchName(String bookBatchName) {
 		this.bookBatchName = bookBatchName;
+	}
+
+	public Long getBookId() {
+		return bookId;
+	}
+
+	public void setBookId(Long bookId) {
+		this.bookId = bookId;
 	}
 
 	public String getIsbn() {
@@ -233,6 +217,22 @@ public class BookApply extends BaseEntity {
 
 	public void setBookReplication(Integer bookReplication) {
 		this.bookReplication = bookReplication;
+	}
+
+	public Integer getMon() {
+		return mon;
+	}
+
+	public void setMon(Integer mon) {
+		this.mon = mon;
+	}
+
+	public BookApplyType getApplyStatus() {
+		return applyStatus;
+	}
+
+	public void setApplyStatus(BookApplyType applyStatus) {
+		this.applyStatus = applyStatus;
 	}
 
 }

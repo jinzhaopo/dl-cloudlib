@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Table;
 
-import com.mysql.fabric.xmlrpc.base.Data;
 import com.yundao.cloudlib.model.enumType.BookBatchType;
 import com.yundao.cloudlib.model.enumType.IsWorkBatchType;
 

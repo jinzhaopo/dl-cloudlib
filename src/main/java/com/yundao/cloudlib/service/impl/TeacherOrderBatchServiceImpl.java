@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.yundao.cloudlib.mapper.TeacherOrderBatchMapper;
-import com.yundao.cloudlib.model.enumType.BookBatchType;
 import com.yundao.cloudlib.model.enumType.IsWorkBatchType;
 import com.yundao.cloudlib.model.teacher.BookBatch;
 import com.yundao.cloudlib.service.TeacherOrderBatchService;

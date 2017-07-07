@@ -9,8 +9,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.yundao.cloudlib.controller.front.LoginController;
 
 import framework.util.CookieUtils;
-import framework.util.RequestUtil;
-import framework.util.ServletUtil;
 
 /**
  * 

@@ -1,49 +1,29 @@
 package framework.config.dataSource;
 
 import java.util.HashMap;
-
 import java.util.Map;
-
 import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeansException;
-
 import org.springframework.beans.MutablePropertyValues;
-
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
-
 import org.springframework.beans.factory.config.BeanDefinition;
-
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
-
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-
 import org.springframework.beans.factory.support.BeanDefinitionReaderUtils;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-
 import org.springframework.beans.factory.support.BeanNameGenerator;
-
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-
 import org.springframework.context.EnvironmentAware;
-
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
-
 import org.springframework.context.annotation.AnnotationConfigUtils;
-
 import org.springframework.context.annotation.AnnotationScopeMetadataResolver;
-
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.context.annotation.ScopeMetadata;
-
 import org.springframework.context.annotation.ScopeMetadataResolver;
-
 import org.springframework.core.env.Environment;
 
 /**

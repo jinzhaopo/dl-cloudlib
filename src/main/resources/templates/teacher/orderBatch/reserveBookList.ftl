@@ -4,7 +4,7 @@
 
 	<head>
 		[#include "/teacher/include/head.htm"]
-	
+		
 		<style>
 			body {
 				border-left: 1px solid #E7EBEF;
@@ -25,8 +25,12 @@
 			
 			.main input[type="text"] {
 				background: #FFFFFF;
+				width:50px;
 			}
-			
+			.main .add,.min {
+				line-height:20px;
+				width:20px;
+			}
 			.search .search_button .btn_orange {
 				width: 100px;
 				height: 24px;
@@ -45,25 +49,117 @@
 				border: 0px solid #F7F3F7;
 			}
 		</style>
+		
+		
 		<script type="text/javascript">
 			function exportExcel(){
-				
 				$("#form_ids").attr("action","${base}/teacher/batch/exportExcel?batchId=${ids }");
-				$("#form_ids").submit();
-				
+				$("#form_ids").submit();	
 			}
+			
+			function deleteDate(url){
+				editDataByCheckId(url);
+			}
+			
+			$(function(){
+				var source=$("#text").val();
+				
+				//加法
+				$(".add").click(function() {
+					var	t = $(this).parent().find('input[class*=text_box]');
+					if(t.val() == "" || undefined || null || 0) {
+						t.val(1);
+					}
+					t.val(parseInt(t.val()) + 1)
+					
+					var bookReplication=t.val();
+					var id=$("#id").val();
+					$.ajax({
+						url:"${base}/teacher/batch/updateBookReplication",
+						dataType:"json",
+						data:{"id":id,"bookReplication":bookReplication},
+						type:"POST",
+						success:function(data){
+							if(data.messageType == "SUCCESS") {
+								
+							} else {
+								t.val(source);
+								alert("更新错误，请稍候再操作");
+							}
+						}
+					})
+					
+				})
+				//减法
+				$(".min").click(function() {
+					var t = $(this).parent().find('input[class*=text_box]');
+					if(t.val() == "" || undefined || null || 0) {
+						t.val(1);
+					}
+					
+					t.val(parseInt(t.val()) - 1)
+					if(parseInt(t.val()) < 1) {
+						t.val(1);
+					}
+					
+					var bookReplication=t.val();
+					var id=$("#id").val();
+					$.ajax({
+						url:"${base}/teacher/batch/updateBookReplication",
+						dataType:"json",
+						data:{"id":id,"bookReplication":bookReplication},
+						type:"POST",
+						success:function(data){
+							if(data.messageType == "SUCCESS") {
+								
+							} else {
+								t.val(source);
+								alert("更新错误，请稍候再操作");
+							}
+						}
+					})
+					
+				})
+				
+				
+				$(".text_box").blur(function() {
+					var t = $(this).parent().find('input[class*=text_box]');
+					var reg = /[1-9]|[1-9][\d]*/;
+					if(!reg.test(t.val())) {
+						t.val(1);
+					}
+					
+					var	bookReplication=t.val();
+					var id=$("#id").val();
+					$.ajax({
+						url:"${base}/teacher/batch/updateBookReplication",
+						dataType:"json",
+						data:{"id":id,"bookReplication":bookReplication},
+						type:"POST",
+						success:function(data){
+							if(data.messageType == "SUCCESS") {
+								
+							} else {
+								t.val(source);
+								alert("更新错误，请稍候再操作");
+							}
+						}
+					})
+					
+				})
+			})
 		</script>
+		
 	</head>
 
 	<body>
 		<form action="${base}/teacher/batch/selectBatch" method="post" id="formId">
-
 			<div class="main">
 				[#include "/teacher/include/path.ftl"]
 				<div class="main_content">
 					<div class="search">
 						<div class="search_condition">
-							<input type="hidden"  id="batchId" name="search_EQ_bookBatchId" value="${ids }"> 
+							<input type="hidden" name="search_EQ_bookBatchId" value="${ids }"> 
 							<span>
 								<font>ISBN：</font>
 								<input name="search_LIKE_isbn" type="text" value="${(LIKE_isbn)!''}" id="isbn" />
@@ -96,15 +192,17 @@
 						<h3>电子书订购目录</h3>
 						<ul>
 							<li><span class="btn_left"></span>
-									总价格：100元
-								<span class="btn_right"></span></li>
+								<a href="" class="btn btn_confirm">订购</a>
+								<span class="btn_right"></span>
+							</li>
 							<li>
 								<font></font>
 							</li>
 
 							<li><span class="btn_left"></span>
-									总数量：10本
-								<span class="btn_right"></span></li>
+								<a href="javascript:deleteDate('${base}/teacher/batch/deleteBookApply');" class="btn btn_delete">删除</a>
+								<span class="btn_right"></span>
+							</li>
 							<li>
 								<font></font>
 							</li>
@@ -123,16 +221,15 @@
 
 									<th width="10%">出版日期</th>
 									<th width="10%">价格</th>
-									<th width="10%">复本数</th>
+									<th width="15%">副本数</th>
 
 								</tr>
 							</thead>
 							<tbody>
-
 								[#if (page.list)??] [#list page.list as data]
 								<tr onclick="checkedTr(this);">
 									<td width="2%" align="center" bgcolor="#f9f9f9"><input type="hidden"  value="${data.bookBatchId }">&nbsp;</td>
-									<td width="2%" align="right"><input name="id" type="radio" class="input_none" id="id" value="${data.id }" /></td>
+									<td width="2%" align="right"><input name="ids" type="radio" class="input_none" id="id" value="${data.id }" form="form_ids"/></td>
 									<td>${data.isbn }</td>
 									<td>${data.classification }</td>
 									<td>${data.title }</td>
@@ -140,9 +237,14 @@
 									<td>${data.press }</td>
 									<td>${data.publicationDate }</td>
 									<td>${data.price }</td>
-									<td>${data.bookReplication }</td>	
+									<td>
+										<input class="min" name="" type="button" value="-" />
+										<input class="text_box" id="text"  name="" type="text" value="${data.bookReplication }"  /> 
+										<input class="add" name="" type="button" value="+" />
+									</td>	
 								</tr>
 								[/#list][/#if]
+								
 								
 							</tbody>
 						</table>

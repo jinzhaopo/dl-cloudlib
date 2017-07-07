@@ -1,6 +1,5 @@
 package com.yundao.cloudlib.service;
 
-import com.yundao.cloudlib.model.enumType.BookBatchType;
 import com.yundao.cloudlib.model.enumType.IsWorkBatchType;
 import com.yundao.cloudlib.model.teacher.BookBatch;
 
