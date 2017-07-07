@@ -45,68 +45,55 @@
 				border: 0px solid #F7F3F7;
 			}
 		</style>
+		<script type="text/javascript">
+			function exportExcel(){
+				
+				$("#form_ids").attr("action","${base}/teacher/batch/exportExcel?batchId=${ids }");
+				$("#form_ids").submit();
+				
+			}
+		</script>
 	</head>
 
 	<body>
-		<form action="${base}/teacher/bookOrder/listSellerBiblio" method="post" id="formId">
+		<form action="${base}/teacher/batch/selectBatch" method="post" id="formId">
 
 			<div class="main">
 				[#include "/teacher/include/path.ftl"]
 				<div class="main_content">
-
-
-					<style>
-						div[type=number] {
-							-moz-appearance: textfield;
-							/* Firefox */
-							-webkit-appearance: textfield;
-							/* Safari and Chrome */
-						}
-						
-						input[type=number]::-webkit-inner-spin-button,
-						input[type=number]::-webkit-outer-spin-button {
-							-webkit-appearance: none;
-							margin: 0;
-						}
-					</style>
-
-					<div id="divmsg">
-						<div class="tipBox">
-							<div class="ico"></div>
-							<p id="pMsg"></p>
-							<div class="close" id="close"></div>
-							<div class="clear"></div>
-						</div>
-					</div>
-
-					<div id="fullbg1"></div>
-					<div id="dialog1">
-
-						<p class="close1" onclick="closeHelp();" style="margin-top: 340px;">关闭</p>
-					</div>
 					<div class="search">
 						<div class="search_condition">
-							<input type="hidden" name="batchId" value="301"> <span><font>ISBN：</font>
-							<input name="isbn" type="text"
-							value="" id="isbn" onfocus="onFocusSubmit('isbn','/bookOrder/querySellerBiblio')"/></span> <span><font>题名：</font>
-							<input name="title" type="text"
-							value="" /></span> <span><font>著者：</font>
-							<input name="author" type="text"
-							value="" /></span> <span><font>分类号：</font>
-							<input name="classNo" type="text"
-							value="" /></span> <span><font>出版社：</font>
-							<input name="publisher" type="text"
-							value="" /></span> 
-							<span class="search_button" onclick="doFormSubmit('formId','/bookOrder/querySellerBiblio')">
-								<input name="" type="button" value="查询" class="btn_orange" />
+							<input type="hidden"  id="batchId" name="search_EQ_bookBatchId" value="${ids }"> 
+							<span>
+								<font>ISBN：</font>
+								<input name="search_LIKE_isbn" type="text" value="${(LIKE_isbn)!''}" id="isbn" />
+							</span> 
+							<span>
+								<font>题名：</font>
+								<input name="search_LIKE_title" type="text" value="${(LIKE_title)!''}" />
+							</span> 
+							<span>
+								<font>著者：</font>
+								<input name="search_LIKE_author" type="text" value="${(LIKE_author)!''}" />
+							</span> 
+							<span>
+								<font>分类号：</font>
+								<input name="search_EQ_classification" type="text" value="${EQ_classification!'' }" />
+							</span> 
+							<span>
+								<font>出版社：</font>
+								<input name="search_LIKE_press" type="text" value="${(LIKE_press)!''}" />
+							</span> 
+							<span class="search_button">
+								<input name=""  type="submit" value="查询" class="btn_orange" />
 							</span>
-							<span class="search_button" onclick="doFormSubmit('formId','/bookOrder/querySellerBiblio')">
+							<span class="search_button" onclick="exportExcel();" >
 								<input name="" type="button" value="导出Excel" class="btn_orange" />
 							</span>
 						</div>
 					</div>
 					<div class="list_table_title">
-						<h3>书商征订目录</h3>
+						<h3>电子书订购目录</h3>
 						<ul>
 							<li><span class="btn_left"></span>
 									总价格：100元
@@ -144,7 +131,7 @@
 
 								[#if (page.list)??] [#list page.list as data]
 								<tr onclick="checkedTr(this);">
-									<td width="2%" align="center" bgcolor="#f9f9f9">&nbsp;</td>
+									<td width="2%" align="center" bgcolor="#f9f9f9"><input type="hidden"  value="${data.bookBatchId }">&nbsp;</td>
 									<td width="2%" align="right"><input name="id" type="radio" class="input_none" id="id" value="${data.id }" /></td>
 									<td>${data.isbn }</td>
 									<td>${data.classification }</td>
@@ -164,6 +151,7 @@
 				</div>
 			</div>
 		</form>
+		<form action="" id="form_ids" hidden="hidden" method="post"></form>
 	</body>
 
 </html>

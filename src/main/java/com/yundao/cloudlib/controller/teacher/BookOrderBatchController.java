@@ -1,12 +1,14 @@
 package com.yundao.cloudlib.controller.teacher;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yundao.cloudlib.I18nConstant;
+import com.yundao.cloudlib.bean.ExportExcelBookApply;
 import com.yundao.cloudlib.model.enumType.BookApplyType;
 import com.yundao.cloudlib.model.enumType.BookBatchType;
 import com.yundao.cloudlib.model.enumType.IsWorkBatchType;
@@ -24,9 +27,11 @@ import com.yundao.cloudlib.model.teacher.BookBatch;
 import com.yundao.cloudlib.service.TeacherOrderBatchService;
 import com.yundao.cloudlib.service.TeacherOrderBookService;
 
+
 import framework.mvc.Message;
 import framework.page.Page;
 import framework.page.SearchFilter;
+import framework.util.ExcelUtil;
 import framework.util.ServletUtil;
 
 /**
@@ -240,15 +245,26 @@ public class BookOrderBatchController extends BaseController {
 	 * @return: String
 	 */
 	@RequestMapping("/selectBatch")
-	public String selectBatch(Page page,Long ids,Model model) {
+	public String selectBatch(Page page,Model model,HttpServletRequest request) {
+		String id=request.getParameter("ids");
+
+		if(id==null){
+			id=request.getParameter("search_EQ_bookBatchId");
+		}
+		Long ids=Long.parseLong(id);
+
 		BookBatch bookBatch=teacherOrderBatchService.get(ids);
-		Map<String, Object> searchMap=new TreeMap<String, Object>();
-		searchMap.put("EQ_bookBatchId",Long.toString(ids));
-		List<SearchFilter> filters = ServletUtil.parse(searchMap);
 		
+		Map<String, Object> searchMap = ServletUtil.getParametersStartingWith(request);
+		List<SearchFilter> filters = ServletUtil.parse(searchMap);
+		filters.add(SearchFilter.eq("bookBatchId", ids));
 		page.setSearchFilters(filters);
+
 		page = teacherOrderBookService.find(page);
+
 		model.addAttribute(PAGE, page);
+		model.addAllAttributes(searchMap);
+		model.addAttribute("ids", ids);
 		
 		//如果是预定状态下的批次，是可以修改电子书的数量，如果不是，则不可以改只能看和导出
 		if(bookBatch.getStatus().equals(BookBatchType.reserve)){
@@ -258,7 +274,74 @@ public class BookOrderBatchController extends BaseController {
 		}
 		
 	}
-
+	
+	/**
+	 * 
+	 * @Title: exportExcel
+	 * @Description: 导出电子书
+	 * @param request
+	 * @param response
+	 * @return: void
+	 */
+	@RequestMapping("/exportExcel")
+	public void exportExcel(HttpServletRequest request,HttpServletResponse response){
+		Long batchId=Long.parseLong(request.getParameter("batchId"));
+		List<ExportExcelBookApply> list=teacherOrderBookService.exportExcel(getTeacher().getSchoolId(), batchId);
+		ExcelUtil eu = ExcelUtil.getInstance();
+		HSSFWorkbook wb = eu.handleObj2Excel(list, ExportExcelBookApply.class, "sheet1", 65535);
+		try {
+			eu.download(wb, "电子书导出", response);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 
+	 * @Title: updateBookReplication
+	 * @Description: 调整复本数
+	 * @param id
+	 * @param bookReplication
+	 * @return
+	 * @return: Message
+	 */
+	@RequestMapping("/updateBookReplication")
+	@ResponseBody
+	public  Message updateBookReplication(Long id,Long bookReplication, RedirectAttributes ra){
+		BookApply book=teacherOrderBookService.get(id);
+		BookBatch batch=teacherOrderBatchService.get(book.getBookBatchId());
+		if(batch.getIsWorkBatch().equals(IsWorkBatchType.yes)){
+			book.setBookReplication(bookReplication);
+			teacherOrderBookService.updateSelective(book);
+			return Message.success(I18nConstant.message_success);
+		}else{
+			addErrorMessage(I18nConstant.error_edit_status, ra);
+			return Message.error(I18nConstant.message_error);
+		}		
+	}
+	/**
+	 * 
+	 * @Title: deleteBookApply
+	 * @Description: 删除电子书
+	 * @param ids
+	 * @param ra
+	 * @return
+	 * @return: String
+	 */
+	@RequestMapping("/deleteBookApply")
+	public String deleteBookApply(Long ids, Model model,RedirectAttributes ra){
+		BookApply book=teacherOrderBookService.get(ids);
+		BookBatch batch=teacherOrderBatchService.get(book.getBookBatchId());
+		if(batch.getIsWorkBatch().equals(IsWorkBatchType.yes)){
+			teacherOrderBookService.remove(ids);
+			addSuccessMessage(I18nConstant.success_delete,ra);
+			
+		}else{
+			addErrorMessage(I18nConstant.error_delete_status,ra);
+		}
+		
+		return redirect("/teacher/batch/selectBatch?ids="+batch.getId());
+	}
+	
 	/**
 	 * 
 	 * @Title: getOrderBookBatch

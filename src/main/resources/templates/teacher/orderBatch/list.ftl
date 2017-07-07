@@ -28,14 +28,7 @@
 			function reviewDate(url){
 				editDataByCheckId(url);
 			}
-			/*
-			 *查看批次
-			 */
-			 function selectDate(url){
-				$("#form_ids").attr("action", url);
-				$("#form_ids").attr("method", "GET");
-				$("#form_ids").submit();
-			}			
+						
 			 
 		</script>
 	</head>
@@ -83,7 +76,7 @@
 								[#if (page.list)??] [#list page.list as data]
 
 								<tr class="odd">
-									<td><input type="checkbox" name="ids" value="${data.id }"  class="input_none" form="form_ids"/></td>
+									<td><input type="checkbox" name="ids" value="${data.id }" id="ids" class="input_none" form="form_ids"/></td>
 									<td >[#if (data.isWorkBatch.getName()=="2")] 
 									          	<span style="color: red;">${data.name}</span> 
 									     [#else]
@@ -95,7 +88,7 @@
 									<td>${data.contactWay }</td>
 									<td>${(data.createDate)?string('yyyy-MM-dd') }</td>
 									<td>${data.status.getName() }</td>
-									<td><a href="javascript:selectDate('${base}/teacher/batch/selectBatch');">查看</a></td>
+									<td><a href="${base }/teacher/batch/selectBatch?ids=${data.id }">查看</a></td>
 								</tr>
 
 								[/#list][/#if]

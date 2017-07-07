@@ -1,13 +1,15 @@
 package com.yundao.cloudlib.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yundao.cloudlib.bean.ExportExcelBookApply;
 import com.yundao.cloudlib.mapper.TeacherOrderBookMapper;
-import com.yundao.cloudlib.model.enumType.BookApplyType;
 import com.yundao.cloudlib.model.teacher.BookApply;
 import com.yundao.cloudlib.service.TeacherOrderBookService;
 
@@ -46,6 +48,33 @@ public class TeacherOrderBookServiceImpl extends BaseServiceImpl<BookApply> impl
 		bookApply.setSchoolId(schoolId);
 		List<BookApply> list=teacherOrderBookMapper.select(bookApply);
 		return list;
+	}
+	
+	/**
+	 * 
+	 * @Title: exportExcel
+	 * @Description: 导出订购电子书
+	 * @return
+	 * @see com.yundao.cloudlib.service.TeacherOrderBookService#exportExcel()
+	 */
+	@Override
+	public List<ExportExcelBookApply> exportExcel(Long schoolId,Long batchId) {
+		List<BookApply> listBookApply=getListByBatchId(schoolId,batchId);
+		List<ExportExcelBookApply> listExcel=new ArrayList<ExportExcelBookApply>();
+		ExportExcelBookApply excelBookApply=new ExportExcelBookApply();
+//		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		for(BookApply b:listBookApply){
+			excelBookApply.setAuthor(b.getAuthor());
+			excelBookApply.setBookReplication(b.getBookReplication());
+			excelBookApply.setClassification(b.getClassification());
+			excelBookApply.setIsbn(b.getIsbn());
+			excelBookApply.setPress(b.getPress());
+			excelBookApply.setPrice(b.getPrice());
+			excelBookApply.setPublicationDate(b.getPublicationDate());
+			excelBookApply.setTitle(b.getTitle());
+			listExcel.add(excelBookApply);
+		}
+		return listExcel;
 	}
 	
 	

@@ -2,6 +2,7 @@ package com.yundao.cloudlib.service;
 
 import java.util.List;
 
+import com.yundao.cloudlib.bean.ExportExcelBookApply;
 import com.yundao.cloudlib.model.enumType.BookApplyType;
 import com.yundao.cloudlib.model.teacher.BookApply;
 
@@ -26,6 +27,14 @@ public interface TeacherOrderBookService extends BaseService<BookApply>{
 	 */
 	List<BookApply> getListByBatchId(Long schoolId,Long batchId);
 	
+	/**
+	 * 
+	 * @Title: exportExcel
+	 * @Description: 导出订购电子书
+	 * @return
+	 * @return: List<ExportExcelBookApply>
+	 */
+	List<ExportExcelBookApply> exportExcel(Long schoolId,Long batchId);
 	
 
 }
